@@ -122,8 +122,9 @@ class Executor(InstanceProxy, concurrent.futures._base.Executor):
     def _prepare_fn(self, fn, force_copy=False):
         if isinstance(self._self, concurrent.futures.ThreadPoolExecutor) \
             or force_copy:
-            fn = copy_current_request_context(fn)
-            if current_app.config[self.EXECUTOR_PUSH_APP_CONTEXT]:
+            if current_app.config.get(self.EXECUTOR_PUSH_REQUEST_CONTEXT):
+                fn = copy_current_request_context(fn)
+            if current_app.config.get(self.EXECUTOR_PUSH_APP_CONTEXT):
                 fn = push_app_context(fn)
         return fn
 
